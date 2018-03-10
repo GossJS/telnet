@@ -5,6 +5,8 @@
 
 Цель - отправить POST-запрос вручную
 
+https://kodaktor.ru/g/telnet
+
 https://kodaktor.ru/http.pdf
 
 Рекомендации: обратите внимание на дополнительные заголовки, отправляемые методом POST, по сравнению с GET, включая Content-Type:application/x-www-form-urlencoded и Content-Length!
