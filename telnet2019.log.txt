@@ -1,0 +1,75 @@
+0. Нам нужно отправить запрос на адрес kodaktor.ru/req/Илия/Илинея
+содержащий строку – тело сообщения POST – name=Илия&familyname=Илинея
+
+для этого мы всё это должны URL-закодировать
+
+ $ node -p "encodeURIComponent('Илия')"
+%D0%98%D0%BB%D0%B8%D1%8F
+ $ node -p "encodeURIComponent('Илинея')"
+%D0%98%D0%BB%D0%B8%D0%BD%D0%B5%D1%8F
+
+и подсчитать длину тела сообщения
+
+ $ node -p "'name=%D0%98%D0%BB%D0%B8%D1%8F&familyname=%D0%98%D0%BB%D0%B8%D0%BD%D0%B5%D1%8F'.length"
+77
+
+Соответственно мы будем отправлять следующее
+
+POST /api/req/%D0%98%D0%BB%D0%B8%D1%8F/%D0%98%D0%BB%D0%B8%D0%BD%D0%B5%D1%8F HTTP/1.1
+Host: kodaktor.ru
+Content-Type:application/x-www-form-urlencoded
+Content-Length:77
+
+name=%D0%98%D0%BB%D0%B8%D1%8F&familyname=%D0%98%D0%BB%D0%B8%D0%BD%D0%B5%D1%8F
+
+======================================================================================================
+======================================================================================================
+
+1. Входим в консоль telnet
+ $ telnet
+ 
+2. Подаём команду open с IP-адресом и портом 
+telnet> open 151.248.115.32 80
+Trying 151.248.115.32...
+Connected to xn--l1afjd5e.xn--p1ai.
+Escape character is '^]'.
+
+3. Мы находимся в режиме прямой передачи текста с нашей консоли на вход серверному приложению
+знак ^] позволяет вернуться обратно в консоль telnet нашего компьютера
+
+4. Вставляем из буфера обмена скопированные строки по одной, нажимая Enter по одному разу в конце каждой
+
+POST /api/req/%D0%98%D0%BB%D0%B8%D1%8F/%D0%98%D0%BB%D0%B8%D0%BD%D0%B5%D1%8F HTTP/1.1
+Host: kodaktor.ru
+Content-Type:application/x-www-form-urlencoded
+Content-Length:77
+
+5. После четырёх заголовков нужны два нажатия Enter и тело
+
+name=%D0%98%D0%BB%D0%B8%D1%8F&familyname=%D0%98%D0%BB%D0%B8%D0%BD%D0%B5%D1%8F
+
+6. После тела ещё одно нажатие Enter
+
+7. И мы видим ответ сервера, сначала заголовки
+
+HTTP/1.1 200 OK
+Access-Control-Allow-Origin: *
+Access-Control-Allow-Methods: GET,POST,DELETE
+Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers
+Content-Type: application/json; charset=utf-8
+X-By: Ilya Goss (c)2017
+X-Test: POST9a8020709d4cbf6c4b4316eb773a01cb
+Content-Length: 83
+ETag: W/"53-0cfSWsOi+TfKqyZDM4AkWg"
+set-cookie: connect.sid=s%3AeS-_9ttHMOWM4RxBFDtKKCLX_x2C6LWr.OKAocRwMaPqjFBZ6UewdTrYzAz8%2FCuWwJLiTyC8Pu1g; Path=/; Expires=Fri, 20 Sep 2019 08:18:28 GMT; HttpOnly
+Date: Fri, 20 Sep 2019 05:31:48 GMT
+Connection: keep-alive
+
+8. И далее тело ответа (в случае require('http') оно идёт в поток response)
+
+{"name":"Илия","familyname":"Илинея","_METHOD":"POST","_NAME":"Илия"}Connection closed by foreign host.
+
+
+9. На сервере это запишется как лог https://kodaktor.ru/api/reqcheck#end
+20.09.2019 08:31:48 | /req/Илия/Илинея | Илия | POST9a8020709d4cbf6c4b4316eb773a01cb
+
